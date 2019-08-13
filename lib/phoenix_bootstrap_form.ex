@@ -113,7 +113,6 @@ defmodule PhoenixBootstrapForm do
     {input_opts, opts} = Keyword.pop(opts, :input, [])
     {help, input_opts} = Keyword.pop(input_opts, :help)
 
-    input_id = Form.input_id(form, field)
     help = draw_help(help)
     error = draw_error_message(get_error(form, field))
 
@@ -133,8 +132,7 @@ defmodule PhoenixBootstrapForm do
 
         radio_class = "form-check-input " <> is_valid_class(form, field)
 
-        value_id = value |> String.replace(~r/\s/, "")
-        input_id = input_id <> "_" <> value_id
+        input_id = Form.input_id(form, field, value)
 
         draw_form_check(
           Form.radio_button(form, field, value, class: radio_class),
@@ -234,8 +232,8 @@ defmodule PhoenixBootstrapForm do
   defp add_labels_to_values(values) when is_list(values) do
     Enum.into(values, [], fn value ->
       case value do
-        {k, v} -> {k, v}
-        v -> {Form.humanize(v), v}
+        {k, v} -> {k, HTML.html_escape(v)}
+        v -> {Form.humanize(v), HTML.html_escape(v)}
       end
     end)
   end
